@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Play, Download, ShieldCheck, Lock, RefreshCcw, Cpu, Zap, Star,
+  Play, Download, ShieldCheck, Lock, RefreshCcw, Cpu, Star,
   Tv, ListMusic, Heart, Headphones, Check, AlertTriangle, FileText,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -58,7 +58,7 @@ function Nav() {
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
       <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-3">
-          <img src={logo} alt="SmartCare TV logo" width={36} height={36} className="rounded-lg" />
+          <img src={logo} alt="SmartCare TV logo" width={48} height={48} className="rounded-lg" />
           <span className="font-display font-semibold tracking-tight">SmartCare TV</span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -136,22 +136,13 @@ function Hero() {
               className="w-full h-auto"
             />
           </div>
-          <FloatingChip className="absolute -left-4 top-10" icon={<Zap className="size-4" />} text="Hardware Accelerated" />
-          <FloatingChip className="absolute -right-4 bottom-10" icon={<ShieldCheck className="size-4" />} text="Zero-Logs Privacy" />
         </div>
       </div>
     </section>
   );
 }
 
-function FloatingChip({ className = "", icon, text }: { className?: string; icon: React.ReactNode; text: string }) {
-  return (
-    <div className={`glass rounded-full px-3 py-2 text-xs flex items-center gap-2 shadow-card ${className}`}>
-      <span className="text-primary">{icon}</span>
-      <span className="text-foreground/90">{text}</span>
-    </div>
-  );
-}
+
 
 function StoreButton({
   title, brand, icon,
@@ -479,7 +470,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="SmartCare TV" width={36} height={36} className="rounded-lg" />
+              <img src={logo} alt="SmartCare TV" width={48} height={48} className="rounded-lg" />
               <span className="font-display font-semibold">SmartCare TV</span>
             </div>
             <p className="mt-4 text-sm text-muted-foreground max-w-md">
