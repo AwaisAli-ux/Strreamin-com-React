@@ -122,11 +122,53 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   // Initialize Paddle globally and handle ?_ptxn= checkout links
-  usePaddle();
+  const { isCheckoutMode, checkoutClosed } = usePaddle();
+
+  // When a ?_ptxn= link is opened, show a full-screen overlay immediately
+  // so the website never flashes before Paddle checkout appears
+  const showOverlay = isCheckoutMode && !checkoutClosed;
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      {showOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            background: "#0a0a0a",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          {/* Spinner */}
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              border: "3px solid rgba(255,255,255,0.1)",
+              borderTop: "3px solid #e11d48",
+              borderRadius: "50%",
+              animation: "paddle-spin 0.8s linear infinite",
+            }}
+          />
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px", margin: 0 }}>
+            Opening secure checkout…
+          </p>
+          <style>{`
+            @keyframes paddle-spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+      {/* Always render Outlet but hide it behind the overlay when in checkout mode */}
+      <div style={showOverlay ? { visibility: "hidden", pointerEvents: "none" } : undefined}>
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }

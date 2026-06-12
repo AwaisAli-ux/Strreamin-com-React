@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Extend window type to include Paddle
 declare global {
   interface Window {
     Paddle?: {
-      Initialize: (options: { token: string }) => void;
+      Initialize: (options: { token: string; eventCallback?: (event: PaddleEvent) => void }) => void;
       Checkout: {
         open: (options: { transactionId: string }) => void;
       };
@@ -12,13 +12,31 @@ declare global {
   }
 }
 
+interface PaddleEvent {
+  name: string;
+  data?: unknown;
+}
+
 /**
  * usePaddle – Initializes Paddle.js globally and automatically opens the
  * checkout overlay when the `?_ptxn=` query parameter is present in the URL.
  *
- * Place this hook in the root layout component so it runs on every page.
+ * Returns `isCheckoutMode: true` immediately (synchronously) when `?_ptxn=`
+ * is detected, so the parent can render a blocking overlay before the website
+ * content becomes visible.
  */
 export function usePaddle() {
+  // Detect ?_ptxn= synchronously on first render (no useEffect delay)
+  const transactionId =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("_ptxn")
+      : null;
+
+  const isCheckoutMode = Boolean(transactionId);
+
+  // Once checkout closes, we can lift the overlay
+  const [checkoutClosed, setCheckoutClosed] = useState(false);
+
   useEffect(() => {
     const token = import.meta.env.VITE_PADDLE_TOKEN as string | undefined;
 
@@ -29,26 +47,35 @@ export function usePaddle() {
       return;
     }
 
-    // Wait until the Paddle script has loaded
+    // Wait until the Paddle script has fully loaded
     const initPaddle = () => {
       if (!window.Paddle) {
-        // Retry after a short delay if the script hasn't loaded yet
-        setTimeout(initPaddle, 100);
+        setTimeout(initPaddle, 50);
         return;
       }
 
       // Initialize Paddle with the client token
-      window.Paddle.Initialize({ token });
+      window.Paddle.Initialize({
+        token,
+        eventCallback(event: PaddleEvent) {
+          // When checkout is dismissed/closed, reveal the website
+          if (
+            event.name === "checkout.closed" ||
+            event.name === "checkout.completed"
+          ) {
+            setCheckoutClosed(true);
+          }
+        },
+      });
 
-      // Check for the ?_ptxn= parameter and open checkout if found
-      const params = new URLSearchParams(window.location.search);
-      const transactionId = params.get("_ptxn");
-
+      // Open checkout immediately if transaction ID is in URL
       if (transactionId) {
         window.Paddle.Checkout.open({ transactionId });
       }
     };
 
     initPaddle();
-  }, []);
+  }, [transactionId]);
+
+  return { isCheckoutMode, checkoutClosed };
 }
