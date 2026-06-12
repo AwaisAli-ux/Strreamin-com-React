@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { usePaddle } from "@/hooks/usePaddle";
 
 function NotFoundComponent() {
   return (
@@ -91,6 +92,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
     ],
+    scripts: [
+      {
+        src: "https://cdn.paddle.com/paddle/v2/paddle.js",
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -114,6 +120,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // Initialize Paddle globally and handle ?_ptxn= checkout links
+  usePaddle();
 
   return (
     <QueryClientProvider client={queryClient}>
