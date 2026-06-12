@@ -105,9 +105,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  // This inline script runs synchronously before ANY paint.
+  // It immediately hides the entire page if ?_ptxn= is in the URL,
+  // preventing even a single frame of the website from being visible.
+  const blockingScript = `
+    (function(){
+      if(new URLSearchParams(location.search).get('_ptxn')){
+        document.documentElement.style.background='#0a0a0a';
+        document.documentElement.style.visibility='hidden';
+      }
+    })();
+  `;
+
   return (
     <html lang="en">
       <head>
+        {/* MUST be first — blocks paint before anything else loads */}
+        <script dangerouslySetInnerHTML={{ __html: blockingScript }} />
         <HeadContent />
       </head>
       <body>
@@ -117,6 +131,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
+
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();

@@ -71,6 +71,8 @@ export function usePaddle() {
       // Open checkout immediately if transaction ID is in URL
       if (transactionId) {
         window.Paddle.Checkout.open({ transactionId });
+        // Restore visibility now that Paddle's own overlay is taking over
+        document.documentElement.style.visibility = "visible";
       }
     };
 
