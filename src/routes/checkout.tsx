@@ -53,6 +53,10 @@ function CheckoutPage() {
 
   const handleCheckout = () => {
     setIsLoading(true);
+    if (typeof window !== "undefined") {
+      const emailQuery = customerEmail.trim() ? `&email=${encodeURIComponent(customerEmail.trim())}` : "";
+      window.history.pushState({}, "", `/payment?plan=${selectedPlan.id}${emailQuery}`);
+    }
     openPaddleCheckout({
       priceId: selectedPlan.priceId,
       customerEmail: customerEmail.trim() || undefined,
