@@ -116,9 +116,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
   const blockingScript = `
     (function(){
       var s = new URLSearchParams(location.search);
+      var p = location.pathname;
       if(s.get('_ptxn') || s.get('polar_checkout') || s.get('checkout_id')){
         document.documentElement.style.background='#0a0a0a';
         document.documentElement.style.visibility='hidden';
+      }
+      if(p.indexOf('/payment') === 0 || p.indexOf('/pay') === 0){
+        document.documentElement.style.background='#0e1015';
       }
     })();
   `;
