@@ -403,26 +403,16 @@ function Pricing() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  onClick={() => {
-                    openPaddleCheckout({ priceId: plan.priceId });
-                  }}
-                  className={`mt-7 w-full rounded-xl py-3 text-sm font-semibold transition cursor-pointer ${
+                <a
+                  href={`/checkout?plan=${plan.key}`}
+                  className={`mt-7 block w-full text-center rounded-xl py-3 text-sm font-semibold transition cursor-pointer ${
                     plan.highlight
                       ? "bg-grad-primary shadow-glow hover:opacity-95 text-primary-foreground"
                       : "bg-foreground text-background hover:bg-foreground/90"
                   }`}
                 >
                   Buy Now — ${item.price}
-                </button>
-                <div className="mt-2.5 text-center">
-                  <a
-                    href={`/checkout?plan=${plan.key}`}
-                    className="text-[11px] text-muted-foreground/80 hover:text-foreground transition underline underline-offset-2"
-                  >
-                    Direct Checkout Link →
-                  </a>
-                </div>
+                </a>
               </div>
             );
           })}
