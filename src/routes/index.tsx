@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Play, Download, ShieldCheck, Lock, RefreshCcw, Cpu, Star,
@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import heroTv from "@/assets/hero-tv.jpg";
+import { openPaddleCheckout } from "@/lib/paddle";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -68,8 +69,8 @@ function Nav() {
           <a href="#legal" className="hover:text-foreground transition">Legal</a>
         </nav>
         <a
-          href="#pricing"
-          className="inline-flex items-center gap-2 rounded-full bg-grad-primary px-4 py-2 text-sm font-medium shadow-glow hover:opacity-95 transition"
+          href="/checkout?plan=6months"
+          className="inline-flex items-center gap-2 rounded-full bg-grad-primary px-4 py-2 text-sm font-medium shadow-glow hover:opacity-95 transition text-primary-foreground"
         >
           Get License
         </a>
@@ -276,15 +277,19 @@ function HowItWorks() {
 
 /* ---------------- PRICING ---------------- */
 type Plan = {
+  key: string;
   label: string;
   duration: string;
   highlight?: boolean;
+  priceId: string;
   prices: { devices: number; price: number }[];
 };
 const plans: Plan[] = [
   {
+    key: "1month",
     label: "1 Month",
     duration: "Monthly License",
+    priceId: "pri_01m5wqg83jxym4wtbvb78d7vmp",
     prices: [
       { devices: 1, price: 35 },
       { devices: 2, price: 55 },
@@ -293,8 +298,10 @@ const plans: Plan[] = [
     ],
   },
   {
+    key: "3months",
     label: "3 Months",
     duration: "Quarterly License",
+    priceId: "pri_01m5wq7p7zatm49myk8tb41bfk",
     prices: [
       { devices: 1, price: 100 },
       { devices: 2, price: 135 },
@@ -303,9 +310,11 @@ const plans: Plan[] = [
     ],
   },
   {
+    key: "6months",
     label: "6 Months",
     duration: "Semi-Annual License",
     highlight: true,
+    priceId: "pri_01m5wqf3xsp8krqy45qfq8mpdm",
     prices: [
       { devices: 1, price: 180 },
       { devices: 2, price: 210 },
@@ -314,8 +323,10 @@ const plans: Plan[] = [
     ],
   },
   {
+    key: "1year",
     label: "1 Year",
     duration: "Annual License",
+    priceId: "pri_01m5wqdfex6pq4p08f4rtp4tmx",
     prices: [
       { devices: 1, price: 350 },
       { devices: 2, price: 500 },
@@ -393,14 +404,25 @@ function Pricing() {
                   ))}
                 </ul>
                 <button
-                  className={`mt-7 w-full rounded-xl py-3 text-sm font-medium transition ${
+                  onClick={() => {
+                    openPaddleCheckout({ priceId: plan.priceId });
+                  }}
+                  className={`mt-7 w-full rounded-xl py-3 text-sm font-semibold transition cursor-pointer ${
                     plan.highlight
-                      ? "bg-grad-primary shadow-glow hover:opacity-95"
+                      ? "bg-grad-primary shadow-glow hover:opacity-95 text-primary-foreground"
                       : "bg-foreground text-background hover:bg-foreground/90"
                   }`}
                 >
-                  Activate {plan.label}
+                  Buy Now — ${item.price}
                 </button>
+                <div className="mt-2.5 text-center">
+                  <a
+                    href={`/checkout?plan=${plan.key}`}
+                    className="text-[11px] text-muted-foreground/80 hover:text-foreground transition underline underline-offset-2"
+                  >
+                    Direct Checkout Link →
+                  </a>
+                </div>
               </div>
             );
           })}
